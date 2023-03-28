@@ -1,0 +1,92 @@
+package com.abdullaharafat.AfkPool;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.Location;
+
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import net.md_5.bungee.api.ChatColor;
+
+public class App extends JavaPlugin implements Listener {
+
+    public String regionName; 
+
+    @Override
+    public void onEnable() {
+    getLogger().info("AfkPool Version 1.1.8 enabled.");
+        getServer().getPluginManager().registerEvents(this, this);
+        regionName = getConfig().getString("region-name", "afk");
+        saveDefaultConfig();
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
+                    Location location = player.getLocation();
+                    ApplicableRegionSet set = regionManager.getApplicableRegions(BlockVector3.at(location.getX(), location.getY(), location.getZ()));
+                    for (ProtectedRegion region : set) {
+                        if (region.getId().equalsIgnoreCase(regionName)) {
+                            int money = (int) (Math.random() * 51) + 50;
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                    "eco give " + player.getName() + " " + money);
+                                    player.sendTitle(ChatColor.WHITE + "You have been given " + ChatColor.GREEN + "$" + money, "Given by AFK Pool", 10, 70, 20);
+                            if (player.getStatistic(Statistic.PLAY_ONE_MINUTE) % 20 == 0) {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                        "crate give " + player.getName() + " afk");
+                                        player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW + "AFK" + ChatColor.WHITE + " Crate key", "Given by AFK Pool", 10, 70, 20);
+                            }
+                        }
+                    }
+                }
+            }
+        }, 0L, 1200L);
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info("AfkPool Disabled");
+    }
+
+    private Set<Player> playersInRegion = new HashSet<>();
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
+        Location locationOfEvent = event.getTo();
+        ApplicableRegionSet set = regionManager.getApplicableRegions(BlockVector3.at(locationOfEvent.getX(), locationOfEvent.getY(), locationOfEvent.getZ()));
+        boolean isInRegion = false;
+        for (ProtectedRegion region : set) {
+            if (region.getId().equalsIgnoreCase(regionName)) {
+                isInRegion = true;
+                break;
+            }
+        }
+        if (isInRegion) {
+            if (!playersInRegion.contains(player)) {
+                playersInRegion.add(player);
+                player.sendTitle(ChatColor.WHITE + "You have " + ChatColor.GREEN +  "entered" + ChatColor.WHITE +" the " + ChatColor.AQUA + "AFK" + ChatColor.WHITE + " Pool", null, 10, 70, 20);
+            }
+        } else {
+            if (playersInRegion.contains(player)) {
+                playersInRegion.remove(player);
+                player.sendTitle(ChatColor.WHITE + "You have " + ChatColor.RED +  "left" + ChatColor.WHITE +" the " + ChatColor.AQUA + "AFK" + ChatColor.WHITE + " Pool", null, 10, 70, 20);
+            }
+        }
+    }
+}
