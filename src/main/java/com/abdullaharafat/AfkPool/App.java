@@ -24,24 +24,20 @@ import net.md_5.bungee.api.ChatColor;
 
 public class App extends JavaPlugin implements Listener {
 
-    public String regionName;
-    public long crateInterval;
-    public long moneyInterval;
-    public String crateName;
-    public int int1;
-    public int int2;
+    String regionName;
+    long crateInterval;
+    long moneyInterval;
+    String crateName;
+    int int1;
+    int int2;
 
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.1.8 enabled.");
-        saveDefaultConfig();
+        getLogger().info("AfkPool Version 1.1.9 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
-        regionName = getConfig().getString("region-name");
-        crateInterval = getConfig().getLong("crate-interval");
-        moneyInterval = getConfig().getLong("money-interval");
-        crateName = getConfig().getString("crate-name");
-        int1 = getConfig().getInt("integer-1");
-        int2 = getConfig().getInt("integer-2");
+        saveDefaultConfig();
+
+        reload();
 
         Runnable[] tasks = new Runnable[] {
                 new Runnable() {
@@ -108,6 +104,17 @@ public class App extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().disablePlugin(this);
     }
 
+    public void reload() {
+        regionName = getConfig().getString("region-name");
+        crateInterval = getConfig().getLong("crate-interval");
+        moneyInterval = getConfig().getLong("money-interval");
+        crateName = getConfig().getString("crate-name");
+        int1 = getConfig().getInt("integer-1");
+        int2 = getConfig().getInt("integer-2");
+
+        reloadConfig();
+    }
+
     public void enablePlugin() {
         Bukkit.getPluginManager().enablePlugin(this);
     }
@@ -126,15 +133,19 @@ public class App extends JavaPlugin implements Listener {
                 return true;
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                disablePlugin();
-                sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.DARK_GREEN + "Disabled AfkPool");
-                sender.sendMessage("--------------------------------");
-                enabledPlugin();
-                sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.DARK_GREEN + "Enabled AfkPool");
-                sender.sendMessage("--------------------------------");
+                // disablePlugin();
+                // enablePlugin();
+                reload();
+                regionName = getConfig().getString("region-name");
+                crateInterval = getConfig().getLong("crate-interval");
+                moneyInterval = getConfig().getLong("money-interval");
+                crateName = getConfig().getString("crate-name");
+                int1 = getConfig().getInt("integer-1");
+                int2 = getConfig().getInt("integer-2");
+                saveDefaultConfig();
+
                 reloadConfig();
+
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.DARK_GREEN + "Config reloaded!");
                 sender.sendMessage("--------------------------------");
@@ -153,7 +164,7 @@ public class App extends JavaPlugin implements Listener {
                         "Given by AFK", 10, 70, 20);
 
                 wait(500);
-                
+
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                         "crate give " + player.getName() + " " + crateName);
                 sender.sendMessage(ChatColor.YELLOW + "Given tester crate");

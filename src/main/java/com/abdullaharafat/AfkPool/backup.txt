@@ -27,7 +27,7 @@ public class App extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-    getLogger().info("AfkPool Version 1.1.8 enabled.");
+    getLogger().info("AfkPool Version 1.1.9 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         regionName = getConfig().getString("region-name", "afk");
         saveDefaultConfig();
