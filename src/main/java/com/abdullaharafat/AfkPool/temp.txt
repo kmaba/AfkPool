@@ -1,47 +1,7 @@
-Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
-                    Location location = player.getLocation();
-                    ApplicableRegionSet set = regionManager.getApplicableRegions(BlockVector3.at(location.getX(), location.getY(), location.getZ()));
-                    for (ProtectedRegion region : set) {
-                        if (region.getId().equalsIgnoreCase(regionName)) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                        "crate give " + player.getName() + " " + crateName);
-                                        player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW + "AFK" + ChatColor.WHITE + " Crate key", "Given by AFK Pool", 10, 70, 20);
-                            }
-                        }
-                    }
-                }
-        }, 0L, crateInterval);
+public void enablePlugin() {
+        Bukkit.getPluginManager().enablePlugin(this);
+    }
 
-Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
-                    Location location = player.getLocation();
-                    ApplicableRegionSet set = regionManager.getApplicableRegions(BlockVector3.at(location.getX(), location.getY(), location.getZ()));
-                    for (ProtectedRegion region : set) {
-                        if (region.getId().equalsIgnoreCase(regionName)) {
-                            int money = (int) (Math.random() * 51) + 50;
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                    "eco give " + player.getName() + " " + money);
-                                    player.sendTitle(ChatColor.WHITE + "You have been given " + ChatColor.GREEN + "$" + money, "Given by AFK Pool", 10, 70, 20);
-                        }
-                    }
-                }
-            }
-        
-        }, 0L, moneyInterval);
-
- @Override
-    public void onEnable() {
-    getLogger().info("AfkPool Version 1.1.9 enabled.");
-        getServer().getPluginManager().registerEvents(this, this);
-        regionName = getConfig().getString("region-name", "afk");
-        crateInterval = getConfig().getLong("crate-interval", 24000L);
-        moneyInterval = getConfig().getLong("money-interval", 1200L);
-        crateName = getConfig().getString("crate-name", "afk");
-        saveDefaultConfig();
+public void disablePlugin() {
+        Bukkit.getPluginManager().disablePlugin(this);
+    }

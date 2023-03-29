@@ -104,6 +104,10 @@ public class App extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().disablePlugin(this);
     }
 
+    public void enablePlugin() {
+        Bukkit.getPluginManager().enablePlugin(this);
+    }
+
     public void reload() {
         regionName = getConfig().getString("region-name");
         crateInterval = getConfig().getLong("crate-interval");
@@ -113,10 +117,6 @@ public class App extends JavaPlugin implements Listener {
         int2 = getConfig().getInt("integer-2");
 
         reloadConfig();
-    }
-
-    public void enablePlugin() {
-        Bukkit.getPluginManager().enablePlugin(this);
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -133,8 +133,6 @@ public class App extends JavaPlugin implements Listener {
                 return true;
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                // disablePlugin();
-                // enablePlugin();
                 reload();
                 regionName = getConfig().getString("region-name");
                 crateInterval = getConfig().getLong("crate-interval");
@@ -145,6 +143,9 @@ public class App extends JavaPlugin implements Listener {
                 saveDefaultConfig();
 
                 reloadConfig();
+
+                disablePlugin();
+                enablePlugin();
 
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.DARK_GREEN + "Config reloaded!");
