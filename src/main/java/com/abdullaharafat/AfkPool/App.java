@@ -74,7 +74,7 @@ public class App extends JavaPlugin implements Listener {
                             for (ProtectedRegion region : set) {
                                 if (region.getId().equalsIgnoreCase(regionName)) {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                            "crate give " + player.getName() + " " + crateName);
+                                            "cc give physical " + crateName + " 1 " + player.getName());
                                     player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
                                             + "AFK" + ChatColor.WHITE + " Crate key", "Given by AFK Pool", 10, 70, 20);
                                 }
@@ -167,7 +167,7 @@ public class App extends JavaPlugin implements Listener {
                 wait(500);
 
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        "crate give " + player.getName() + " " + crateName);
+                        "cc give physical " + crateName + " 1 " + player.getName());
                 sender.sendMessage(ChatColor.YELLOW + "Given tester crate");
                 sender.sendMessage("--------------------------------");
                 player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
