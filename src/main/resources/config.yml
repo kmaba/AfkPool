@@ -10,6 +10,11 @@ crate-name: afk # Crate name here
 money-interval: 1200 # Interval of money in ticks (def: 1200) which is 1 minute 
 crate-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
 
+
+# This value is the subtitle of the title that is given (e.g. "You have been given ${money value}" and under that is the subtitle.) 
+
+subtitle: Given By AfkPool
+
 # OK let me tell you how to use integers 1 and 2, so the default is 50 - 100 money, so in java it would
 # look like this `(Math.random() * 51 (int 1) ) + 50 (int2);`, so both of the numbers add to 101 which is 1 above 100
 # (because it is inclusive) so If you want to do 1 - 50 (which added is 51) it should be

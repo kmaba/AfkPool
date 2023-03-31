@@ -28,6 +28,7 @@ public class App extends JavaPlugin implements Listener {
     long crateInterval;
     long moneyInterval;
     String crateName;
+    String Subtitle;
     int int1;
     int int2;
 
@@ -56,7 +57,7 @@ public class App extends JavaPlugin implements Listener {
                                             "eco give " + player.getName() + " " + money);
                                     player.sendTitle(
                                             ChatColor.WHITE + "You have been given " + ChatColor.GREEN + "$" + money,
-                                            "Given by AFK Pool", 10, 70, 20);
+                                            Subtitle, 10, 70, 20);
                                 }
                             }
                         }
@@ -76,7 +77,7 @@ public class App extends JavaPlugin implements Listener {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                                             "cc give physical " + crateName + " 1 " + player.getName());
                                     player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
-                                            + "AFK" + ChatColor.WHITE + " Crate key", "Given by AFK Pool", 10, 70, 20);
+                                            + "AFK" + ChatColor.WHITE + " Crate key", Subtitle, 10, 70, 20);
                                 }
                             }
                         }
@@ -113,6 +114,7 @@ public class App extends JavaPlugin implements Listener {
         crateInterval = getConfig().getLong("crate-interval");
         moneyInterval = getConfig().getLong("money-interval");
         crateName = getConfig().getString("crate-name");
+        Subtitle = getConfig().getString("subtitle");
         int1 = getConfig().getInt("integer-1");
         int2 = getConfig().getInt("integer-2");
 
@@ -162,7 +164,7 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage("--------------------------------");
                 player.sendTitle(
                         ChatColor.WHITE + "You have been given " + ChatColor.GREEN + "$" + money,
-                        "Given by AFK", 10, 70, 20);
+                        Subtitle, 10, 70, 20);
 
                 wait(500);
 
@@ -171,7 +173,7 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.YELLOW + "Given tester crate");
                 sender.sendMessage("--------------------------------");
                 player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
-                        + "AFK" + ChatColor.WHITE + " Crate key", "Given by AFK Pool", 10, 70, 20);
+                        + "AFK" + ChatColor.WHITE + " Crate key", Subtitle, 10, 70, 20);
                 return true;
 
             }
