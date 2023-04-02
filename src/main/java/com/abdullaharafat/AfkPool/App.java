@@ -53,6 +53,8 @@ public class App extends JavaPlugin implements Listener {
             }
         });
 
+        getServer().getPluginManager().registerEvent(new ManageChatAndCommandListener(), this);
+
         Runnable[] tasks = new Runnable[] {
                 new Runnable() {
                     @Override
@@ -176,7 +178,6 @@ public class App extends JavaPlugin implements Listener {
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("test")) {
                 Player player = Bukkit.getPlayer(sender.getName());
-                if (player != null) {
                 int moneyVal = (int) (Math.random() * int1) + int2;
                 String money = String.valueOf(moneyVal);
                 Command1 = Command1.replace("%p", player.getName());
@@ -201,10 +202,6 @@ public class App extends JavaPlugin implements Listener {
                 player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
                         + "AFK" + ChatColor.WHITE + " Crate key", Subtitle, 10, 70, 20);
                 return true;
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Player cannot be null, are you executing from console?");
-                    return true;
-                }
             }
 
             if (args.length == 1 && args[0].equalsIgnoreCase("values")) {
