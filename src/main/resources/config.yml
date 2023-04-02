@@ -24,7 +24,7 @@ crate-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 min
 command-1: eco give %p %m
 command-2: cc give physical %c 1 %p
 
-# This value is the subtitle of the title that is given (e.g. "You have been given ${money value}" and under that is the subtitle.) 
+# This value is the subtitle of the title that is given ( the little text under the title)
 
 subtitle: Given By AfkPool
 
