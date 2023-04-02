@@ -148,9 +148,9 @@ public class App extends JavaPlugin implements Listener {
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
                 sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.GREEN + "/AfkPool reload - Reloads config");
-                sender.sendMessage(ChatColor.GREEN + "/AfkPool test - Give tester money and crate");
-                sender.sendMessage(ChatColor.GREEN + "/AfkPool values - Shows values");
+                sender.sendMessage(ChatColor.GREEN + "/AfkPool reload - Reloads config, also restarts the plugin.");
+                sender.sendMessage(ChatColor.GREEN + "/AfkPool test - Give tester things set in the config");
+                sender.sendMessage(ChatColor.GREEN + "/AfkPool values - Shows values of the config");
                 sender.sendMessage("--------------------------------");
                 return true;
             }
