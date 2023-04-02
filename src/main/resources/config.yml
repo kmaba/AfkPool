@@ -10,6 +10,19 @@ crate-name: afk # Crate name here
 money-interval: 1200 # Interval of money in ticks (def: 1200) which is 1 minute 
 crate-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
 
+# Now the commands the plugin is going to execute
+
+# By default command 1 is the money command
+# and command 2 is the crate command
+
+# But you can set this to whatever you want!
+
+# %p is the player
+# %m is the amount of random number
+# %c is the crates name
+
+command-1: eco give %p %m
+command-2: cc give physical %c 1 %p
 
 # This value is the subtitle of the title that is given (e.g. "You have been given ${money value}" and under that is the subtitle.) 
 

@@ -29,16 +29,29 @@ public class App extends JavaPlugin implements Listener {
     long moneyInterval;
     String crateName;
     String Subtitle;
+    String Command1;
+    String Command2;
     int int1;
     int int2;
 
+    JavaPlugin plugin;
+    int resourceId;
+
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.1.9 enabled.");
+        getLogger().info("AfkPool Version 1.2.0 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
         reload();
+
+        new UpdateChecker(this, 108746).getVersion(version -> {
+            if (this.getDescription().getVersion().equals(version)) {
+                getLogger().info("There is not a new AfkPool update available, you are on the latest version.");
+            } else {
+                getLogger().severe("There is a new AfkPool update available. Please update to the latest version.");
+            }
+        });
 
         Runnable[] tasks = new Runnable[] {
                 new Runnable() {
@@ -52,9 +65,12 @@ public class App extends JavaPlugin implements Listener {
                                     BlockVector3.at(location.getX(), location.getY(), location.getZ()));
                             for (ProtectedRegion region : set) {
                                 if (region.getId().equalsIgnoreCase(regionName)) {
-                                    int money = (int) (Math.random() * int1) + int2;
+                                    int moneyVal = (int) (Math.random() * int1) + int2;
+                                    String money = String.valueOf(moneyVal);
+                                    Command1 = Command1.replace("%p", player.getName());
+                                    Command1 = Command1.replace("%m", money);
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                            "eco give " + player.getName() + " " + money);
+                                            Command1);
                                     player.sendTitle(
                                             ChatColor.WHITE + "You have been given " + ChatColor.GREEN + "$" + money,
                                             Subtitle, 10, 70, 20);
@@ -74,8 +90,10 @@ public class App extends JavaPlugin implements Listener {
                                     BlockVector3.at(location.getX(), location.getY(), location.getZ()));
                             for (ProtectedRegion region : set) {
                                 if (region.getId().equalsIgnoreCase(regionName)) {
+                                    Command2 = Command2.replace("%p", player.getName());
+                                    Command2 = Command2.replace("%c", crateName);
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                            "cc give physical " + crateName + " 1 " + player.getName());
+                                            Command2);
                                     player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
                                             + "AFK" + ChatColor.WHITE + " Crate key", Subtitle, 10, 70, 20);
                                 }
@@ -115,6 +133,8 @@ public class App extends JavaPlugin implements Listener {
         moneyInterval = getConfig().getLong("money-interval");
         crateName = getConfig().getString("crate-name");
         Subtitle = getConfig().getString("subtitle");
+        Command1 = getConfig().getString("command-1");
+        Command2 = getConfig().getString("command-2");
         int1 = getConfig().getInt("integer-1");
         int2 = getConfig().getInt("integer-2");
 
@@ -156,9 +176,12 @@ public class App extends JavaPlugin implements Listener {
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("test")) {
                 Player player = Bukkit.getPlayer(sender.getName());
-                int money = (int) (Math.random() * int1) + int2;
+                int moneyVal = (int) (Math.random() * int1) + int2;
+                String money = String.valueOf(moneyVal);
+                Command1 = Command1.replace("%p", player.getName());
+                Command1 = Command1.replace("%m", money);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        "eco give " + player.getName() + " " + money);
+                        Command1);
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.YELLOW + "Given tester money");
                 sender.sendMessage("--------------------------------");
@@ -168,8 +191,10 @@ public class App extends JavaPlugin implements Listener {
 
                 wait(500);
 
+                Command2 = Command2.replace("%p", player.getName());
+                Command2 = Command2.replace("%c", crateName);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        "cc give physical " + crateName + " 1 " + player.getName());
+                        Command2);
                 sender.sendMessage(ChatColor.YELLOW + "Given tester crate");
                 sender.sendMessage("--------------------------------");
                 player.sendTitle(ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
@@ -180,14 +205,25 @@ public class App extends JavaPlugin implements Listener {
 
             if (args.length == 1 && args[0].equalsIgnoreCase("values")) {
                 sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.BLUE + "region-name: " + ChatColor.GOLD + regionName);
-                sender.sendMessage(ChatColor.BLUE + "crate-name: " + ChatColor.GOLD + crateName);
+                sender.sendMessage(
+                        ChatColor.BLUE + "region-name: " + ChatColor.GOLD + getConfig().getString("region-name"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "crate-name: " + ChatColor.GOLD + getConfig().getString("crate-name"));
                 sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.BLUE + "money-interval: " + ChatColor.GREEN + moneyInterval);
-                sender.sendMessage(ChatColor.BLUE + "crate-interval: " + ChatColor.GREEN + crateInterval);
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-1: " + ChatColor.GOLD + getConfig().getString("command-1"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-2: " + ChatColor.GOLD + getConfig().getString("command-2"));
                 sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.BLUE + "integer-1: " + ChatColor.WHITE + int1);
-                sender.sendMessage(ChatColor.BLUE + "integer-2: " + ChatColor.WHITE + int2);
+                sender.sendMessage(ChatColor.BLUE + "subtitle: " + ChatColor.GOLD + getConfig().getString("subtitle"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(
+                        ChatColor.BLUE + "money-interval: " + ChatColor.GREEN + getConfig().getLong("money-interval"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "crate-interval: " + ChatColor.GREEN + getConfig().getLong("crate-interval"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.BLUE + "integer-1: " + ChatColor.WHITE + getConfig().getInt("integer-1"));
+                sender.sendMessage(ChatColor.BLUE + "integer-2: " + ChatColor.WHITE + getConfig().getInt("integer-2"));
                 sender.sendMessage("--------------------------------");
                 return true;
             }
