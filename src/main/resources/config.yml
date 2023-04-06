@@ -7,8 +7,8 @@ crate-name: afk # Crate name here
 # so multiply the seconds of the time frame you want
 # by 20 to get the ticks of it.
 
-money-interval: 1200 # Interval of money in ticks (def: 1200) which is 1 minute 
-crate-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
+command1-interval: 1200 # Interval of money (or whatever you set) in ticks (def: 1200) which is 1 minute 
+command2-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
 
 # Now the commands the plugin is going to execute
 
@@ -23,6 +23,15 @@ crate-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 min
 
 command-1: eco give %p %m
 command-2: cc give physical %c 1 %p
+
+# Titles, these values are the values of the titles
+# %m is the amount of random number
+# %c is the crates name
+
+command1-title: You Have been given &a$%m
+command2-title: You Have been given an &e%c &fCrate key
+entering-title: You have &aentered &fthe &3Afk &fPool
+exiting-title: You have &4left &fthe &3Afk &fPool
 
 # This value is the subtitle of the title that is given ( the little text under the title)
 
@@ -39,9 +48,6 @@ integer-1: 51
 integer-2: 50
 
 # Figure it out yourself I gave a basic example of what you need to do.
-
-
-
 
 #Made by Abdullah :)
 
