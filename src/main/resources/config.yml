@@ -10,6 +10,13 @@ crate-name: afk # Crate name here
 command1-interval: 1200 # Interval of money (or whatever you set) in ticks (def: 1200) which is 1 minute 
 command2-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
 
+# Ok now we have that done lets do the true/false booleans
+
+command-1-enabled: true
+command-2-enabled: true
+
+# You get the idea.
+
 # Now the commands the plugin is going to execute
 
 # By default command 1 is the money command
@@ -37,15 +44,14 @@ exiting-title: You have &4left &fthe &3Afk &fPool
 
 subtitle: Given By AfkPool
 
-# OK let me tell you how to use integers 1 and 2, so the default is 50 - 100 money, so in java it would
-# look like this `(Math.random() * 51 (int 1) ) + 50 (int2);`, so both of the numbers add to 101 which is 1 above 100
-# (because it is inclusive) so If you want to do 1 - 50 (which added is 51) it should be
+# Numbers!, these values are the values of the minimum and maximum numbers.
+# eg. the comment below is for 1 - 50
  
-# integer-1: 50
-# integer-2: 1
+# min: 1
+# max: 50
 
-integer-1: 51
-integer-2: 50
+min: 50
+max: 100
 
 # Figure it out yourself I gave a basic example of what you need to do.
 

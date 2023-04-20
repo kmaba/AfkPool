@@ -35,15 +35,22 @@ public class App extends JavaPlugin implements Listener {
     String exitingTitle;
     String Command1;
     String Command2;
-    int int1;
-    int int2;
+    Boolean Command1E;
+    Boolean Command2E;
+    int min;
+    int max;
+
+    String VersionNumber;
 
     JavaPlugin plugin;
     int resourceId;
 
+    int moneyVal;
+    int testMoneyVal;
+
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.2.1 enabled.");
+        getLogger().info("AfkPool Version 1.2.3 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
@@ -51,10 +58,13 @@ public class App extends JavaPlugin implements Listener {
 
         new UpdateChecker(this, 108746).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
-                getLogger().info("There is not a new AfkPool update available, you are on the latest version ()" + version + ").");
+                getLogger().info("There is not a new AfkPool update available, you are on the latest version ()"
+                        + version + ").");
             } else {
-                getLogger().severe("There is a new AfkPool update available. Please update to the latest version (" + this.getDescription().getVersion() + " --> " + version + ").");
+                getLogger().severe("There is a new AfkPool update available. Please update to the latest version ("
+                        + this.getDescription().getVersion() + " --> " + version + ").");
             }
+            VersionNumber = version;
         });
 
         Runnable[] tasks = new Runnable[] {
@@ -69,17 +79,20 @@ public class App extends JavaPlugin implements Listener {
                                     BlockVector3.at(location.getX(), location.getY(), location.getZ()));
                             for (ProtectedRegion region : set) {
                                 if (region.getId().equalsIgnoreCase(regionName)) {
-                                    int moneyVal = (int) (Math.random() * int1) + int2;
-                                    String money = String.valueOf(moneyVal);
-                                    Command1 = Command1.replace("%p", player.getName());
-                                    Command1 = Command1.replace("%m", money);
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                            Command1);
-                                    moneyTitle = moneyTitle.replace("%m", money);
-                                    moneyTitle = format(moneyTitle);
-                                    player.sendTitle(
-                                            moneyTitle,
-                                            Subtitle, 10, 70, 20);
+                                    if (moneyVal == 0) {
+                                        moneyVal = min + (int) (Math.random() * ((max - min) + 1));
+                                        Command1 = Command1.replace("%p", player.getName());
+                                        Command1 = Command1.replace("%m", String.valueOf(moneyVal));
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                                Command1);
+                                        moneyTitle = moneyTitle.replace("%m", String.valueOf(moneyVal));
+                                        moneyTitle = format(moneyTitle);
+                                        player.sendTitle(
+                                                moneyTitle,
+                                                Subtitle, 10, 70, 20);
+                                        moneyVal = 0;
+                                        reload();
+                                    }
                                 }
                             }
                         }
@@ -103,14 +116,20 @@ public class App extends JavaPlugin implements Listener {
                                     crateTitle = crateTitle.replace("%c", crateName);
                                     crateTitle = format(crateTitle);
                                     player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
+                                    reload();
                                 }
                             }
                         }
                     }
                 }
         };
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[0], 0L, moneyInterval);
+
+        if (Command1E) {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[0], 0L, moneyInterval);
+        }
+        if (Command2E) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[1], 0L, crateInterval);
+        }
     }
 
     @Override
@@ -118,7 +137,7 @@ public class App extends JavaPlugin implements Listener {
         getLogger().info("AfkPool Disabled");
     }
 
-    public static String format (String str) {
+    public static String format(String str) {
         return ChatColor.translateAlternateColorCodes('&', str);
     }
 
@@ -150,8 +169,10 @@ public class App extends JavaPlugin implements Listener {
         exitingTitle = getConfig().getString("exiting-title");
         Command1 = getConfig().getString("command-1");
         Command2 = getConfig().getString("command-2");
-        int1 = getConfig().getInt("integer-1");
-        int2 = getConfig().getInt("integer-2");
+        Command1E = getConfig().getBoolean("command-1-enabled");
+        Command2E = getConfig().getBoolean("command-2-enabled");
+        min = getConfig().getInt("min");
+        max = getConfig().getInt("max");
 
         reloadConfig();
     }
@@ -166,6 +187,19 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.GREEN + "/AfkPool reload - Reloads config, also restarts the plugin.");
                 sender.sendMessage(ChatColor.GREEN + "/AfkPool test - Give tester things set in the config");
                 sender.sendMessage(ChatColor.GREEN + "/AfkPool values - Shows values of the config");
+                sender.sendMessage(ChatColor.GREEN + "/AfkPool version - Shows the version number");
+                sender.sendMessage("--------------------------------");
+                return true;
+            }
+            if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.GOLD + "The version you have installed is " + ChatColor.YELLOW + this.getDescription().getVersion());
+                sender.sendMessage(ChatColor.GOLD + "The version on Spigot is " + ChatColor.YELLOW + VersionNumber);
+                if (this.getDescription().getVersion().equals(VersionNumber)) {
+                    sender.sendMessage(ChatColor.GREEN + "You are on the latest version.");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "You are not on the latest version!");
+                }
                 sender.sendMessage("--------------------------------");
                 return true;
             }
@@ -183,32 +217,51 @@ public class App extends JavaPlugin implements Listener {
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("test")) {
                 Player player = Bukkit.getPlayer(sender.getName());
-                int testMoneyVal = (int) (Math.random() * int1) + int2;
-                String testMoney = String.valueOf(testMoneyVal);
-                Command1 = Command1.replace("%p", player.getName());
-                Command1 = Command1.replace("%m", testMoney);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        Command1);
-                sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
-                sender.sendMessage("--------------------------------");
-                moneyTitle = moneyTitle.replace("%m", testMoney);
-                moneyTitle = format(moneyTitle);
-                player.sendTitle(
-                        moneyTitle,
-                        Subtitle, 10, 70, 20);
+                if (testMoneyVal == 0) {
+                    testMoneyVal = min + (int) (Math.random() * ((max - min) + 1));
+                    Command1 = Command1.replace("%p", player.getName());
+                    Command1 = Command1.replace("%m", String.valueOf(testMoneyVal));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                            Command1);
+                    if (Command1E) {        
+                    sender.sendMessage("--------------------------------");
+                    sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                    sender.sendMessage("--------------------------------");
+                    } else {
+                        sender.sendMessage("--------------------------------");
+                        sender.sendMessage(ChatColor.RED + "Command-1 is disabled in the config!");
+                        sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                        sender.sendMessage("--------------------------------");
+                    }
+                    moneyTitle = moneyTitle.replace("%m", String.valueOf(testMoneyVal));
+                    moneyTitle = format(moneyTitle);
+                    player.sendTitle(
+                            moneyTitle,
+                            Subtitle, 10, 70, 20);
 
+                    testMoneyVal = 0;
+                }
+                reload();
                 wait(500);
 
                 Command2 = Command2.replace("%p", player.getName());
                 Command2 = Command2.replace("%c", crateName);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                         Command2);
+                if (Command2E) {
                 sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command2);
                 sender.sendMessage("--------------------------------");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Command-2 is disabled in the config!");
+                    sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command2);
+                    sender.sendMessage("--------------------------------");
+                }
                 crateTitle = crateTitle.replace("%c", crateName);
                 crateTitle = format(crateTitle);
                 player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
+                Command2 = getConfig().getString(Command2);
+                crateTitle = getConfig().getString(crateTitle);
+                reload();
                 return true;
             }
 
@@ -224,19 +277,30 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage(
                         ChatColor.BLUE + "command-2: " + ChatColor.GOLD + getConfig().getString("command-2"));
                 sender.sendMessage("--------------------------------");
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-1-enabled: " + getConfig().getBoolean("command-1-enabled"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-2-enabled: " + getConfig().getBoolean("command-2-enabled"));
+                sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.BLUE + "subtitle: " + ChatColor.GOLD + getConfig().getString("subtitle"));
-                sender.sendMessage(ChatColor.BLUE + "command1-title: " + ChatColor.GOLD + getConfig().getString("command1-title"));
-                sender.sendMessage(ChatColor.BLUE + "command2-title: " + ChatColor.GOLD + getConfig().getString("command2-title"));
-                sender.sendMessage(ChatColor.BLUE + "entering-title: " + ChatColor.GOLD + getConfig().getString("entering-title"));
-                sender.sendMessage(ChatColor.BLUE + "exiting-title: " + ChatColor.GOLD + getConfig().getString("exiting-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command1-title: " + ChatColor.GOLD + getConfig().getString("command1-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command2-title: " + ChatColor.GOLD + getConfig().getString("command2-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "entering-title: " + ChatColor.GOLD + getConfig().getString("entering-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "exiting-title: " + ChatColor.GOLD + getConfig().getString("exiting-title"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(
-                        ChatColor.BLUE + "command1-interval: " + ChatColor.GREEN + getConfig().getLong("command1-interval"));
+                        ChatColor.BLUE + "command1-interval: " + ChatColor.GREEN
+                                + getConfig().getLong("command1-interval"));
                 sender.sendMessage(
-                        ChatColor.BLUE + "command2-interval: " + ChatColor.GREEN + getConfig().getLong("command2-interval"));
+                        ChatColor.BLUE + "command2-interval: " + ChatColor.GREEN
+                                + getConfig().getLong("command2-interval"));
                 sender.sendMessage("--------------------------------");
-                sender.sendMessage(ChatColor.BLUE + "integer-1: " + ChatColor.WHITE + getConfig().getInt("integer-1"));
-                sender.sendMessage(ChatColor.BLUE + "integer-2: " + ChatColor.WHITE + getConfig().getInt("integer-2"));
+                sender.sendMessage(ChatColor.BLUE + "min: " + ChatColor.WHITE + getConfig().getInt("min"));
+                sender.sendMessage(ChatColor.BLUE + "max: " + ChatColor.WHITE + getConfig().getInt("max"));
                 sender.sendMessage("--------------------------------");
                 return true;
             }
