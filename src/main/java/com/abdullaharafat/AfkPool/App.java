@@ -50,7 +50,7 @@ public class App extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.2.3 enabled.");
+        getLogger().info("AfkPool Version 1.2.3.1 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
@@ -177,6 +177,7 @@ public class App extends JavaPlugin implements Listener {
         reloadConfig();
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("AfkPool")) {
             if (args.length == 0) {

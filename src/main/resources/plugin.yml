@@ -2,7 +2,7 @@ name: AfkPool
 main: com.abdullaharafat.AfkPool.App
 description: A plugin that rewards AFK players in a specific region
 version: ${project.version}
-api-version: 1.19
+api-version: 1.13
 depend: [WorldGuard]
 commands:
   AfkPool:
