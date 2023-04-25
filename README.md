@@ -1,7 +1,6 @@
-# Afk Pool
+# AfkPool
+### _The Best Afk Rewards plugin, Ever_
 
-<h3>Check spigot for releases</h3>
-(https://v.gd/AfkPool)
+#### Check **[spigot](v.gd/AfkPool)** or **[modrinth](https://modrinth.com/plugin/afk-pool/version/1.2.5)** for releases.
 
-<h2>Current version: <b>1.2.5</b></h2>
-
+# Current version: <b>1.2.5</b>
