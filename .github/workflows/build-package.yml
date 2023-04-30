@@ -13,10 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK
-      uses: actions/setup-java@v3
+    - name: Setup JDK
+      uses: actions/setup-java@v1.4.4
       with:
-        java-version: '20'
+        java-version: 20.0.1
     
     - name: Build with Maven
       run: mvn -B clean package --file pom.xml
