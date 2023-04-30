@@ -51,16 +51,6 @@
             <filtering>true</filtering>
         </resource>
     </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.0.0-M1</version>
-        <configuration>
-          <altDeploymentRepository>github::default::https://maven.pkg.github.com/DolosArafat/AfkPool</altDeploymentRepository>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>    
 
 </project>
