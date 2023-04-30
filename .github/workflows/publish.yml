@@ -29,6 +29,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
     - name: Deploy to GitHub Packages Apache Maven
-      run: mvn deploy -s $HOME/.m2/settings.xml
+      run: mvn deploy -s $HOME/.m2/settings.xml -e
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
