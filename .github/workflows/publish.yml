@@ -1,28 +1,35 @@
-name: mvn clean package
+name: Build and Deploy to GitHub Packages Apache Maven
 
 on:
   release:
     types: [created]
 
 jobs:
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.4.4
+    - uses: actions/checkout@v2
+
+    - name: Set up Java JDK
+      uses: actions/setup-java@v2
       with:
-        java-version: 20.0.1
+        java-version: '11'
 
     - name: Build with Maven
       run: mvn -B clean package --file pom.xml
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy
+    - name: Set up settings.xml file
+      run: |
+        mkdir -p $HOME/.m2
+        echo "<settings><servers><server><id>github</id><username>USERNAME</username><password>${{ secrets.TOKEN }}</password></server></servers></settings>" > $HOME/.m2/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+    - name: Deploy to GitHub Packages Apache Maven
+      run: mvn deploy -s $HOME/.m2/settings.xml
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
