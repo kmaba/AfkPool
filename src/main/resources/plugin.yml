@@ -6,6 +6,10 @@ api-version: 1.13
 depend: [WorldGuard]
 commands:
   AfkPool:
-    description: Rewards players for being AFK in a specific region
+    description: Triggers events with in AfkPool and shows the values, permission is afkpool.use
     usage: /AfkPool <help|reload|test|values>
+    permission: afkpool.use
+  ap:
+    description: A shortcut to the AfkPool command
+    usage: /ap <help|reload|test|values>
     permission: afkpool.use

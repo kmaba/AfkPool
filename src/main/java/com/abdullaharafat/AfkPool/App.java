@@ -50,7 +50,7 @@ public class App extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.2.5 enabled.");
+        getLogger().info("AfkPool Version 1.2.6 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
@@ -189,6 +189,134 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.GREEN + "/AfkPool test - Give tester things set in the config");
                 sender.sendMessage(ChatColor.GREEN + "/AfkPool values - Shows values of the config");
                 sender.sendMessage(ChatColor.GREEN + "/AfkPool version - Shows the version number");
+                sender.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "TIP: " + ChatColor.RESET + ChatColor.BLUE + "Use '/AfkPool' shortcut '/ap' for easier access to the plugins commands");
+                sender.sendMessage("--------------------------------");
+                return true;
+            }
+            if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.GOLD + "The version you have installed is " + ChatColor.YELLOW + this.getDescription().getVersion());
+                sender.sendMessage(ChatColor.GOLD + "The version on Spigot is " + ChatColor.YELLOW + VersionNumber);
+                if (this.getDescription().getVersion().equals(VersionNumber)) {
+                    sender.sendMessage(ChatColor.GREEN + "You are on the latest version.");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "You are not on the latest version!");
+                }
+                sender.sendMessage("--------------------------------");
+                return true;
+            }
+            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+                reload();
+                saveDefaultConfig();
+                reloadConfig();
+                disablePlugin();
+                enablePlugin();
+
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.DARK_GREEN + "Config reloaded!");
+                sender.sendMessage("--------------------------------");
+                return true;
+            }
+            if (args.length == 1 && args[0].equalsIgnoreCase("test")) {
+                Player player = Bukkit.getPlayer(sender.getName());
+                if (testMoneyVal == 0) {
+                    testMoneyVal = min + (int) (Math.random() * ((max - min) + 1));
+                    Command1 = Command1.replace("%p", player.getName());
+                    Command1 = Command1.replace("%m", String.valueOf(testMoneyVal));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                            Command1);
+                    if (Command1E) {        
+                    sender.sendMessage("--------------------------------");
+                    sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                    sender.sendMessage("--------------------------------");
+                    } else {
+                        sender.sendMessage("--------------------------------");
+                        sender.sendMessage(ChatColor.RED + "Command-1 is disabled in the config!");
+                        sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                        sender.sendMessage("--------------------------------");
+                    }
+                    moneyTitle = moneyTitle.replace("%m", String.valueOf(testMoneyVal));
+                    moneyTitle = format(moneyTitle);
+                    player.sendTitle(
+                            moneyTitle,
+                            Subtitle, 10, 70, 20);
+
+                    testMoneyVal = 0;
+                }
+                reload();
+                wait(500);
+
+                Command2 = Command2.replace("%p", player.getName());
+                Command2 = Command2.replace("%c", crateName);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                        Command2);
+                if (Command2E) {
+                sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command2);
+                sender.sendMessage("--------------------------------");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Command-2 is disabled in the config!");
+                    sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command2);
+                    sender.sendMessage("--------------------------------");
+                }
+                crateTitle = crateTitle.replace("%c", crateName);
+                crateTitle = format(crateTitle);
+                player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
+                Command2 = getConfig().getString(Command2);
+                crateTitle = getConfig().getString(crateTitle);
+                reload();
+                return true;
+            }
+
+            if (args.length == 1 && args[0].equalsIgnoreCase("values")) {
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(
+                        ChatColor.BLUE + "region-name: " + ChatColor.GOLD + getConfig().getString("region-name"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "crate-name: " + ChatColor.GOLD + getConfig().getString("crate-name"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-1: " + ChatColor.GOLD + getConfig().getString("command-1"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-2: " + ChatColor.GOLD + getConfig().getString("command-2"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-1-enabled: " + getConfig().getBoolean("command-1-enabled"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-2-enabled: " + getConfig().getBoolean("command-2-enabled"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.BLUE + "subtitle: " + ChatColor.GOLD + getConfig().getString("subtitle"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command1-title: " + ChatColor.GOLD + getConfig().getString("command1-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command2-title: " + ChatColor.GOLD + getConfig().getString("command2-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "entering-title: " + ChatColor.GOLD + getConfig().getString("entering-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "exiting-title: " + ChatColor.GOLD + getConfig().getString("exiting-title"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(
+                        ChatColor.BLUE + "command1-interval: " + ChatColor.GREEN
+                                + getConfig().getLong("command1-interval"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command2-interval: " + ChatColor.GREEN
+                                + getConfig().getLong("command2-interval"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.BLUE + "min: " + ChatColor.WHITE + getConfig().getInt("min"));
+                sender.sendMessage(ChatColor.BLUE + "max: " + ChatColor.WHITE + getConfig().getInt("max"));
+                sender.sendMessage("--------------------------------");
+                return true;
+            }
+        }
+        if (cmd.getName().equalsIgnoreCase("ap")) {
+            if (args.length == 0) {
+                return false;
+            }
+            if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.GREEN + "/ap reload - Reloads config, also restarts the plugin.");
+                sender.sendMessage(ChatColor.GREEN + "/ap test - Give tester things set in the config");
+                sender.sendMessage(ChatColor.GREEN + "/ap values - Shows values of the config");
+                sender.sendMessage(ChatColor.GREEN + "/ap version - Shows the version number");
                 sender.sendMessage("--------------------------------");
                 return true;
             }
@@ -308,6 +436,7 @@ public class App extends JavaPlugin implements Listener {
         }
         return false;
     }
+    
 
     private Set<Player> playersInRegion = new HashSet<>();
 
