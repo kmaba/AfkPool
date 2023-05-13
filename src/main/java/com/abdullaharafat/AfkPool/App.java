@@ -3,8 +3,6 @@ package com.abdullaharafat.AfkPool;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bstats.bukkit.Metrics;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
