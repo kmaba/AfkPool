@@ -1,7 +1,7 @@
 # AfkPool Config File
 
-region-name: afk # WorldGuard region name here (def: afk)
-crate-name: afk # Crate name here
+region-name: afk # WorldGuard region name here (def: afk) (cAsE sEnSiTiVe)
+crate-name: afk # Crate name here (cAsE sEnSiTiVe)
 
 # Minecraft tps is (by default) 20 ticks per second
 # so multiply the seconds of the time frame you want
@@ -53,12 +53,10 @@ subtitle: Given By AfkPool
 min: 50
 max: 100
 
-# Figure it out yourself I gave a basic example of what you need to do.
-
-#Made by Abdullah :)
+# Made by Abdullah :)
 
 # ██╗░░░██╗░█████╗░██████╗░██████╗░██╗░░░██╗██╗░░░░░██╗░░░░░  ███╗░░░███╗░█████╗░
-# ██║░░░██║██╔══██╗██╔══██╗██╔══██╗██║░░░██║██║░░░░░██║░░░░░  ████╗░████║██╔══██╗
+# ██║░░░██║██╔══██╗██╔══██╗██╔══██╗██║░░░██║██║░░░░░██║░░░░░  ████╗ ░████║██╔══██╗
 # ╚██╗░██╔╝██║░░██║██████╔╝██████╦╝██║░░░██║██║░░░░░██║░░░░░  ██╔████╔██║██║░░╚═╝
 # ░╚████╔╝░██║░░██║██╔══██╗██╔══██╗██║░░░██║██║░░░░░██║░░░░░  ██║╚██╔╝██║██║░░██╗
 # ░░╚██╔╝░░╚█████╔╝██║░░██║██████╦╝╚██████╔╝███████╗███████╗  ██║░╚═╝░██║╚█████╔╝

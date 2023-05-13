@@ -3,6 +3,8 @@ package com.abdullaharafat.AfkPool;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bstats.bukkit.Metrics;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,7 +52,7 @@ public class App extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.2.6 enabled.");
+        getLogger().info("AfkPool Version 1.2.7 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
@@ -66,6 +68,9 @@ public class App extends JavaPlugin implements Listener {
             }
             VersionNumber = version;
         });
+
+        int pluginId = 18474; // <-- Replace with the id of your plugin!
+        Metrics metrics = new Metrics(this, pluginId);
 
         Runnable[] tasks = new Runnable[] {
                 new Runnable() {
