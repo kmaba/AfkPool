@@ -67,8 +67,8 @@ public class App extends JavaPlugin implements Listener {
             VersionNumber = version;
         });
 
-        int pluginId = 18474; // <-- Replace with the id of your plugin!
-        Metrics metrics = new Metrics(this, pluginId);
+        int pluginId = 18474;
+        new Metrics(this, pluginId);
 
         Runnable[] tasks = new Runnable[] {
                 new Runnable() {
