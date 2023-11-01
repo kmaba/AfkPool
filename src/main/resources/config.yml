@@ -9,11 +9,13 @@ crate-name: afk # Crate name here (cAsE sEnSiTiVe)
 
 command1-interval: 1200 # Interval of money (or whatever you set) in ticks (def: 1200) which is 1 minute 
 command2-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
+command3-interval: 12000
 
 # Ok now we have that done lets do the true/false booleans
 
 command-1-enabled: true
 command-2-enabled: true
+command-3-enabled: true
 
 # You get the idea.
 
@@ -30,6 +32,7 @@ command-2-enabled: true
 
 command-1: eco give %p %m
 command-2: cc give physical %c 1 %p
+command-3: give %p diamond $m
 
 # Titles, these values are the values of the titles
 # %m is the amount of random number
@@ -37,6 +40,7 @@ command-2: cc give physical %c 1 %p
 
 command1-title: You Have been given &a$%m
 command2-title: You Have been given an &e%c &fCrate key
+command3-title: You Have been given %m Diamonds
 entering-title: You have &aentered &fthe &3Afk &fPool
 exiting-title: You have &4left &fthe &3Afk &fPool
 
@@ -53,11 +57,9 @@ subtitle: Given By AfkPool
 min: 50
 max: 100
 
-# Made by Abdullah :)
+# Numbers for the third command.
 
-# ██╗░░░██╗░█████╗░██████╗░██████╗░██╗░░░██╗██╗░░░░░██╗░░░░░  ███╗░░░███╗░█████╗░
-# ██║░░░██║██╔══██╗██╔══██╗██╔══██╗██║░░░██║██║░░░░░██║░░░░░  ████╗ ░████║██╔══██╗
-# ╚██╗░██╔╝██║░░██║██████╔╝██████╦╝██║░░░██║██║░░░░░██║░░░░░  ██╔████╔██║██║░░╚═╝
-# ░╚████╔╝░██║░░██║██╔══██╗██╔══██╗██║░░░██║██║░░░░░██║░░░░░  ██║╚██╔╝██║██║░░██╗
-# ░░╚██╔╝░░╚█████╔╝██║░░██║██████╦╝╚██████╔╝███████╗███████╗  ██║░╚═╝░██║╚█████╔╝
-# ░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░╚═════╝░╚══════╝╚══════╝  ╚═╝░░░░░╚═╝░╚════╝░
+min2: 50
+max2: 100
+
+# Made by Abdullah :)

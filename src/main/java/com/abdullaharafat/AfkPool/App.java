@@ -27,18 +27,24 @@ public class App extends JavaPlugin implements Listener {
     String regionName;
     long crateInterval;
     long moneyInterval;
+    long command3Interval; // Added for the third command
     String crateName;
     String Subtitle;
     String moneyTitle;
     String crateTitle;
+    String command3Title; // Added for the third command
     String enteringTitle;
     String exitingTitle;
     String Command1;
     String Command2;
+    String Command3; // Added for the third command
     Boolean Command1E;
     Boolean Command2E;
+    Boolean Command3E; // Added for the third command
     int min;
     int max;
+    int min2;
+    int max2; // Added for the third command
 
     String VersionNumber;
 
@@ -47,10 +53,12 @@ public class App extends JavaPlugin implements Listener {
 
     int moneyVal;
     int testMoneyVal;
+    int diamondVal;
+    int testDiamondVal;
 
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.2.7 enabled.");
+        getLogger().info("AfkPool Version 1.3.1 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
@@ -71,67 +79,95 @@ public class App extends JavaPlugin implements Listener {
         new Metrics(this, pluginId);
 
         Runnable[] tasks = new Runnable[] {
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                                    .get(BukkitAdapter.adapt(player.getWorld()));
-                            Location location = player.getLocation();
-                            ApplicableRegionSet set = regionManager.getApplicableRegions(
-                                    BlockVector3.at(location.getX(), location.getY(), location.getZ()));
-                            for (ProtectedRegion region : set) {
-                                if (region.getId().equalsIgnoreCase(regionName)) {
-                                    if (moneyVal == 0) {
-                                        moneyVal = min + (int) (Math.random() * ((max - min) + 1));
-                                        Command1 = Command1.replace("%p", player.getName());
-                                        Command1 = Command1.replace("%m", String.valueOf(moneyVal));
-                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                                Command1);
-                                        moneyTitle = moneyTitle.replace("%m", String.valueOf(moneyVal));
-                                        moneyTitle = format(moneyTitle);
-                                        player.sendTitle(
-                                                moneyTitle,
-                                                Subtitle, 10, 70, 20);
-                                        moneyVal = 0;
-                                        reload();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                                    .get(BukkitAdapter.adapt(player.getWorld()));
-                            Location location = player.getLocation();
-                            ApplicableRegionSet set = regionManager.getApplicableRegions(
-                                    BlockVector3.at(location.getX(), location.getY(), location.getZ()));
-                            for (ProtectedRegion region : set) {
-                                if (region.getId().equalsIgnoreCase(regionName)) {
-                                    Command2 = Command2.replace("%p", player.getName());
-                                    Command2 = Command2.replace("%c", crateName);
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                            Command2);
-                                    crateTitle = crateTitle.replace("%c", crateName);
-                                    crateTitle = format(crateTitle);
-                                    player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
+            new Runnable() {
+                @Override
+                public void run() {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                                .get(BukkitAdapter.adapt(player.getWorld()));
+                        Location location = player.getLocation();
+                        ApplicableRegionSet set = regionManager.getApplicableRegions(
+                                BlockVector3.at(location.getX(), location.getY(), location.getZ()));
+                        for (ProtectedRegion region : set) {
+                            if (region.getId().equalsIgnoreCase(regionName)) {
+                                if (moneyVal == 0) {
+                                    moneyVal = min + (int) (Math.random() * ((max - min) + 1));
+                                    Command1 = Command1.replace("%p", player.getName());
+                                    Command1 = Command1.replace("%m", String.valueOf(moneyVal));
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Command1);
+                                    moneyTitle = moneyTitle.replace("%m", String.valueOf(moneyVal));
+                                    moneyTitle = format(moneyTitle);
+                                    player.sendTitle(moneyTitle, Subtitle, 10, 70, 20);
+                                    moneyVal = 0;
                                     reload();
                                 }
                             }
                         }
                     }
                 }
+            },
+            new Runnable() {
+                @Override
+                public void run() {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                                .get(BukkitAdapter.adapt(player.getWorld()));
+                        Location location = player.getLocation();
+                        ApplicableRegionSet set = regionManager.getApplicableRegions(
+                                BlockVector3.at(location.getX(), location.getY(), location.getZ()));
+                        for (ProtectedRegion region : set) {
+                            if (region.getId().equalsIgnoreCase(regionName)) {
+                                Command2 = Command2.replace("%p", player.getName());
+                                Command2 = Command2.replace("%c", crateName);
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Command2);
+                                crateTitle = crateTitle.replace("%c", crateName);
+                                crateTitle = format(crateTitle);
+                                player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
+                                reload();
+                            }
+                        }
+                    }
+                }
+            },
+            // Third command runnable
+            new Runnable() {
+                @Override
+                public void run() {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                                .get(BukkitAdapter.adapt(player.getWorld()));
+                        Location location = player.getLocation();
+                        ApplicableRegionSet set = regionManager.getApplicableRegions(
+                                BlockVector3.at(location.getX(), location.getY(), location.getZ()));
+                        for (ProtectedRegion region : set) {
+                            if (region.getId().equalsIgnoreCase(regionName)) {
+                                if (diamondVal == 0) {
+                                    diamondVal = min2 + (int) (Math.random() * ((max2 - min2) + 1));
+                                    Command3 = Command3.replace("%p", player.getName());
+                                    Command3 = Command3.replace("%m", String.valueOf(diamondVal));
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Command3);
+                                    command3Title = command3Title.replace("%m", String.valueOf(diamondVal));
+                                    command3Title = format(command3Title);
+                                    player.sendTitle(command3Title, Subtitle, 10, 70, 20);
+                                    diamondVal = 0;
+                                    reload();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         };
 
         if (Command1E) {
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[0], 0L, moneyInterval);
         }
         if (Command2E) {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[1], 0L, crateInterval);
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[1], 0L, crateInterval);
+        }
+        // Schedule the third command if it is enabled
+        if (Command3E) {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, tasks[2], 0L, command3Interval);
         }
     }
 
@@ -162,20 +198,26 @@ public class App extends JavaPlugin implements Listener {
 
     public void reload() {
         regionName = getConfig().getString("region-name");
+        command3Interval = getConfig().getLong("command3-interval");
         crateInterval = getConfig().getLong("command2-interval");
         moneyInterval = getConfig().getLong("command1-interval");
         crateName = getConfig().getString("crate-name");
         Subtitle = getConfig().getString("subtitle");
         moneyTitle = getConfig().getString("command1-title");
         crateTitle = getConfig().getString("command2-title");
+        command3Title = getConfig().getString("command3-title");
         enteringTitle = getConfig().getString("entering-title");
         exitingTitle = getConfig().getString("exiting-title");
         Command1 = getConfig().getString("command-1");
         Command2 = getConfig().getString("command-2");
+        Command3 = getConfig().getString("command-3");
         Command1E = getConfig().getBoolean("command-1-enabled");
         Command2E = getConfig().getBoolean("command-2-enabled");
+        Command3E = getConfig().getBoolean("command3-enabled");
         min = getConfig().getInt("min");
         max = getConfig().getInt("max");
+        min = getConfig().getInt("min2");
+        max = getConfig().getInt("max2");
 
         reloadConfig();
     }
@@ -259,13 +301,38 @@ public class App extends JavaPlugin implements Listener {
                 } else {
                     sender.sendMessage(ChatColor.RED + "Command-2 is disabled in the config!");
                     sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command2);
-                    sender.sendMessage("--------------------------------");
                 }
                 crateTitle = crateTitle.replace("%c", crateName);
                 crateTitle = format(crateTitle);
                 player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
                 Command2 = getConfig().getString(Command2);
                 crateTitle = getConfig().getString(crateTitle);
+                reload();
+                wait(500);
+                if (testDiamondVal == 0) {
+                    testDiamondVal = min + (int) (Math.random() * ((max2 - min2) + 1));
+                    Command1 = Command1.replace("%p", player.getName());
+                    Command1 = Command1.replace("%m", String.valueOf(testDiamondVal));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                            Command1);
+                    if (Command1E) {        
+                    sender.sendMessage("--------------------------------");
+                    sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                    sender.sendMessage("--------------------------------");
+                    } else {
+                        sender.sendMessage("--------------------------------");
+                        sender.sendMessage(ChatColor.RED + "Command-3 is disabled in the config!");
+                        sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                        sender.sendMessage("--------------------------------");
+                    }
+                    moneyTitle = moneyTitle.replace("%m", String.valueOf(testDiamondVal));
+                    moneyTitle = format(moneyTitle);
+                    player.sendTitle(
+                            moneyTitle,
+                            Subtitle, 10, 70, 20);
+
+                    testDiamondVal = 0;
+                }
                 reload();
                 return true;
             }
@@ -281,17 +348,23 @@ public class App extends JavaPlugin implements Listener {
                         ChatColor.BLUE + "command-1: " + ChatColor.GOLD + getConfig().getString("command-1"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command-2: " + ChatColor.GOLD + getConfig().getString("command-2"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-3: " + ChatColor.GOLD + getConfig().getString("command-3"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(
                         ChatColor.BLUE + "command-1-enabled: " + getConfig().getBoolean("command-1-enabled"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command-2-enabled: " + getConfig().getBoolean("command-2-enabled"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-2-enabled: " + getConfig().getBoolean("command-3-enabled"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.BLUE + "subtitle: " + ChatColor.GOLD + getConfig().getString("subtitle"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command1-title: " + ChatColor.GOLD + getConfig().getString("command1-title"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command2-title: " + ChatColor.GOLD + getConfig().getString("command2-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command2-title: " + ChatColor.GOLD + getConfig().getString("command3-title"));
                 sender.sendMessage(
                         ChatColor.BLUE + "entering-title: " + ChatColor.GOLD + getConfig().getString("entering-title"));
                 sender.sendMessage(
@@ -303,9 +376,15 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage(
                         ChatColor.BLUE + "command2-interval: " + ChatColor.GREEN
                                 + getConfig().getLong("command2-interval"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command3-interval: " + ChatColor.GREEN
+                                + getConfig().getLong("command3-interval"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.BLUE + "min: " + ChatColor.WHITE + getConfig().getInt("min"));
                 sender.sendMessage(ChatColor.BLUE + "max: " + ChatColor.WHITE + getConfig().getInt("max"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.BLUE + "min2: " + ChatColor.WHITE + getConfig().getInt("min2"));
+                sender.sendMessage(ChatColor.BLUE + "max2: " + ChatColor.WHITE + getConfig().getInt("max2"));
                 sender.sendMessage("--------------------------------");
                 return true;
             }
@@ -386,13 +465,38 @@ public class App extends JavaPlugin implements Listener {
                 } else {
                     sender.sendMessage(ChatColor.RED + "Command-2 is disabled in the config!");
                     sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command2);
-                    sender.sendMessage("--------------------------------");
                 }
                 crateTitle = crateTitle.replace("%c", crateName);
                 crateTitle = format(crateTitle);
                 player.sendTitle(crateTitle, Subtitle, 10, 70, 20);
                 Command2 = getConfig().getString(Command2);
                 crateTitle = getConfig().getString(crateTitle);
+                reload();
+                wait(500);
+                if (testDiamondVal == 0) {
+                    testDiamondVal = min + (int) (Math.random() * ((max2 - min2) + 1));
+                    Command1 = Command1.replace("%p", player.getName());
+                    Command1 = Command1.replace("%m", String.valueOf(testDiamondVal));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                            Command1);
+                    if (Command1E) {        
+                    sender.sendMessage("--------------------------------");
+                    sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                    sender.sendMessage("--------------------------------");
+                    } else {
+                        sender.sendMessage("--------------------------------");
+                        sender.sendMessage(ChatColor.RED + "Command-3 is disabled in the config!");
+                        sender.sendMessage(ChatColor.YELLOW + "Executed Command: " + ChatColor.GREEN + Command1);
+                        sender.sendMessage("--------------------------------");
+                    }
+                    moneyTitle = moneyTitle.replace("%m", String.valueOf(testDiamondVal));
+                    moneyTitle = format(moneyTitle);
+                    player.sendTitle(
+                            moneyTitle,
+                            Subtitle, 10, 70, 20);
+
+                    testDiamondVal = 0;
+                }
                 reload();
                 return true;
             }
@@ -408,17 +512,23 @@ public class App extends JavaPlugin implements Listener {
                         ChatColor.BLUE + "command-1: " + ChatColor.GOLD + getConfig().getString("command-1"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command-2: " + ChatColor.GOLD + getConfig().getString("command-2"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-3: " + ChatColor.GOLD + getConfig().getString("command-3"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(
                         ChatColor.BLUE + "command-1-enabled: " + getConfig().getBoolean("command-1-enabled"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command-2-enabled: " + getConfig().getBoolean("command-2-enabled"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command-3-enabled: " + getConfig().getBoolean("command-3-enabled"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.BLUE + "subtitle: " + ChatColor.GOLD + getConfig().getString("subtitle"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command1-title: " + ChatColor.GOLD + getConfig().getString("command1-title"));
                 sender.sendMessage(
                         ChatColor.BLUE + "command2-title: " + ChatColor.GOLD + getConfig().getString("command2-title"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command3-title: " + ChatColor.GOLD + getConfig().getString("command3-title"));
                 sender.sendMessage(
                         ChatColor.BLUE + "entering-title: " + ChatColor.GOLD + getConfig().getString("entering-title"));
                 sender.sendMessage(
@@ -430,9 +540,15 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage(
                         ChatColor.BLUE + "command2-interval: " + ChatColor.GREEN
                                 + getConfig().getLong("command2-interval"));
+                sender.sendMessage(
+                        ChatColor.BLUE + "command3-interval: " + ChatColor.GREEN
+                                + getConfig().getLong("command3-interval"));
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.BLUE + "min: " + ChatColor.WHITE + getConfig().getInt("min"));
                 sender.sendMessage(ChatColor.BLUE + "max: " + ChatColor.WHITE + getConfig().getInt("max"));
+                sender.sendMessage("--------------------------------");
+                sender.sendMessage(ChatColor.BLUE + "min2: " + ChatColor.WHITE + getConfig().getInt("min2"));
+                sender.sendMessage(ChatColor.BLUE + "max2: " + ChatColor.WHITE + getConfig().getInt("max2"));
                 sender.sendMessage("--------------------------------");
                 return true;
             }
