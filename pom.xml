@@ -47,7 +47,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/DolosArafat/AfkPool</url>
+            <url>https://maven.pkg.github.com/kmaba/AfkPool</url>
         </repository>
     </distributionManagement>
 
