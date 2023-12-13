@@ -58,7 +58,7 @@ public class App extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("AfkPool Version 1.3.1 enabled.");
+        getLogger().info("AfkPool Version 1.3.2 enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
