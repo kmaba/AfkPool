@@ -32,7 +32,7 @@ command-3-enabled: true
 
 command-1: eco give %p %m
 command-2: cc give physical %c 1 %p
-command-3: give %p diamond $m
+command-3: give %p diamond %m
 
 # Titles, these values are the values of the titles
 # %m is the amount of random number
