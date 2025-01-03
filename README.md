@@ -6,4 +6,4 @@
 
 ##### _You can also download from the packages for early access to new ones 🤫_
 
-### Current version: <b>2.0.0</b> 🎉🎉 Unlimited Commanes and Optimizations update.
+### Current version: <b>2.0.0</b> 🎉🎉 Unlimited Commands and Optimizations update.
