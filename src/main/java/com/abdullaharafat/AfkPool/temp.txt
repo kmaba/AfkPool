@@ -1,7 +1,0 @@
-ChatColor.WHITE + "You have " + ChatColor.GREEN + "entered" + ChatColor.WHITE + " the "
-                        + ChatColor.AQUA + "AFK" + ChatColor.WHITE + " Pool"
-
-ChatColor.WHITE + "You have " + ChatColor.RED + "left" + ChatColor.WHITE + " the "
-                        + ChatColor.AQUA + "AFK" + ChatColor.WHITE + " Pool"
-ChatColor.WHITE + "You have been given an " + ChatColor.YELLOW
-                        + "AFK" + ChatColor.WHITE + " Crate key"

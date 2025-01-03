@@ -10,7 +10,4 @@ commands:
     description: Triggers events with in AfkPool and shows the values, permission is afkpool.use
     usage: /AfkPool <help|reload|test|values>
     permission: afkpool.use
-  ap:
-    description: A shortcut to the AfkPool command
-    usage: /ap <help|reload|test|values>
-    permission: afkpool.use
+    aliases: [ap]

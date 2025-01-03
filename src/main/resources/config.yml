@@ -1,65 +1,24 @@
-# AfkPool Config File
+subtitle: '&7You are in the AFK Pool!'
+entering-title: '&aWelcome to the AFK Pool!'
+exiting-title: '&cLeaving the AFK Pool!'
 
-region-name: afk # WorldGuard region name here (def: afk) (cAsE sEnSiTiVe)
-crate-name: afk # Crate name here (cAsE sEnSiTiVe)
+commands:
+  command1:
+    region-name: 'afkpool-region1'
+    interval: 6000
+    command: 'give %p diamond %m'
+    title: '&eYou received %m diamonds!'
+    enabled: true
+    min: 1
+    max: 5
+  command2:
+    region-name: 'afkpool-region2'
+    interval: 12000
+    command: 'give %p gold_ingot %m'
+    title: '&6You received %m gold ingots!'
+    enabled: true
+    min: 5
+    max: 10
+  # Add more commands as needed
 
-# Minecraft tps is (by default) 20 ticks per second
-# so multiply the seconds of the time frame you want
-# by 20 to get the ticks of it.
-
-command1-interval: 1200 # Interval of money (or whatever you set) in ticks (def: 1200) which is 1 minute 
-command2-interval: 24000 # Interval of crates in ticks (def: 24000) which is 20 minutes
-command3-interval: 12000
-
-# Ok now we have that done lets do the true/false booleans
-
-command-1-enabled: true
-command-2-enabled: true
-command-3-enabled: true
-
-# You get the idea.
-
-# Now the commands the plugin is going to execute
-
-# By default command 1 is the money command
-# and command 2 is the crate command
-
-# But you can set this to whatever you want!
-
-# %p is the player
-# %m is the amount of random number
-# %c is the crates name
-
-command-1: eco give %p %m
-command-2: cc give physical %c 1 %p
-command-3: give %p diamond %m
-
-# Titles, these values are the values of the titles
-# %m is the amount of random number
-# %c is the crates name
-
-command1-title: You Have been given &a$%m
-command2-title: You Have been given an &e%c &fCrate key
-command3-title: You Have been given %m Diamonds
-entering-title: You have &aentered &fthe &3Afk &fPool
-exiting-title: You have &4left &fthe &3Afk &fPool
-
-# This value is the subtitle of the title that is given ( the little text under the title)
-
-subtitle: Given By AfkPool
-
-# Numbers!, these values are the values of the minimum and maximum numbers.
-# eg. the comment below is for 1 - 50
- 
-# min: 1
-# max: 50
-
-min: 50
-max: 100
-
-# Numbers for the third command.
-
-min2: 50
-max2: 100
-
-# Made by Abdullah :)
+# love from @kmaba, contact me on discord if you need any help
