@@ -17,8 +17,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
-        distribution: 'adopt'
+        java-version: '20'
+        distribution: 'temurin'
         server-id: github
         settings-path: ${{ github.workspace }}
 
