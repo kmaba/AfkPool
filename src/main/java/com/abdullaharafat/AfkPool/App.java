@@ -35,6 +35,8 @@ public class App extends JavaPlugin implements Listener {
 
     private String VersionNumber;
 
+    // private int pluginId;
+
     @Override
     public void onEnable() {
         getLogger().info("AfkPool Version 2.0.0 enabled.");
@@ -45,7 +47,7 @@ public class App extends JavaPlugin implements Listener {
 
         new UpdateChecker(this, 108746).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
-                getLogger().info("There is not a new AfkPool update available, you are on the latest version ()"
+                getLogger().info("There is not a new AfkPool update available, you are on the latest version ("
                         + version + ").");
             } else {
                 getLogger().severe("There is a new AfkPool update available. Please update to the latest version ("
@@ -59,7 +61,7 @@ public class App extends JavaPlugin implements Listener {
 
         for (CommandConfig command : commands.values()) {
             if (command.isEnabled()) {
-                Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> executeCommandForRegion(command), 0L, command.getInterval());
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> executeCommandForRegion(command), 0L, command.getIntervalInterval());
             }
         }
     }
@@ -97,18 +99,23 @@ public class App extends JavaPlugin implements Listener {
         enteringTitle = getConfig().getString("entering-title");
         exitingTitle = getConfig().getString("exiting-title");
 
-        for (String commandKey : getConfig().getConfigurationSection("commands").getKeys(false)) {
-            CommandConfig commandConfig = new CommandConfig(
-                getConfig().getString("commands." + commandKey + ".region-name"),
-                getConfig().getLong("commands." + commandKey + ".interval"),
-                getConfig().getString("commands." + commandKey + ".command"),
-                getConfig().getString("commands." + commandKey + ".title"),
-                getConfig().getBoolean("commands." + commandKey + ".enabled"),
-                getConfig().getInt("commands." + commandKey + ".min"),
-                getConfig().getInt("commands." + commandKey + ".max")
-            );
-            commands.put(commandKey, commandConfig);
-            playersInRegions.put(commandKey, new HashSet<>());
+        if (getConfig().isConfigurationSection("commands")) {
+            for (String commandKey : getConfig().getConfigurationSection("commands").getKeys(false)) {
+                CommandConfig commandConfig = new CommandConfig(
+                    commandKey,
+                    getConfig().getString("commands." + commandKey + ".region-name"),
+                    getConfig().getLong("commands." + commandKey + ".interval"),
+                    getConfig().getString("commands." + commandKey + ".command"),
+                    getConfig().getString("commands." + commandKey + ".title"),
+                    getConfig().getBoolean("commands." + commandKey + ".enabled"),
+                    getConfig().getInt("commands." + commandKey + ".min"),
+                    getConfig().getInt("commands." + commandKey + ".max")
+                );
+                commands.put(commandKey, commandConfig);
+                playersInRegions.put(commandKey, new HashSet<>());
+            }
+        } else {
+            getLogger().severe("No commands found in the config.yml file.");
         }
 
         reloadConfig();
@@ -169,11 +176,11 @@ public class App extends JavaPlugin implements Listener {
                 sender.sendMessage("--------------------------------");
                 for (String commandKey : commands.keySet()) {
                     CommandConfig command = commands.get(commandKey);
-                    sender.sendMessage(ChatColor.BLUE + "Command: " + ChatColor.GOLD + commandKey);
+                    sender.sendMessage(ChatColor.BLUE + "Command: " + ChatColor.GOLD + command.getKey());
                     sender.sendMessage(ChatColor.BLUE + "region-name: " + ChatColor.GOLD + command.getRegionName());
                     sender.sendMessage(ChatColor.BLUE + "command: " + ChatColor.GOLD + command.getCommand());
                     sender.sendMessage(ChatColor.BLUE + "title: " + ChatColor.GOLD + command.getTitle());
-                    sender.sendMessage(ChatColor.BLUE + "enabled: " + getConfig().getBoolean("commands." + commandKey + ".enabled"));
+                    sender.sendMessage(ChatColor.BLUE + "enabled: " + command.isEnabled());
                     sender.sendMessage(ChatColor.BLUE + "interval: " + ChatColor.GREEN + command.getInterval());
                     sender.sendMessage(ChatColor.BLUE + "min: " + ChatColor.WHITE + command.getMin());
                     sender.sendMessage(ChatColor.BLUE + "max: " + ChatColor.WHITE + command.getMax());
@@ -271,7 +278,8 @@ public class App extends JavaPlugin implements Listener {
         private int min;
         private int max;
 
-        public CommandConfig(String regionName, long interval, String command, String title, boolean enabled, int min, int max) {
+        public CommandConfig(String key, String regionName, long interval, String command, String title, boolean enabled, int min, int max) {
+            this.key = key;
             this.regionName = regionName;
             this.interval = interval;
             this.command = command;
@@ -283,10 +291,6 @@ public class App extends JavaPlugin implements Listener {
 
         public String getKey() {
             return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
         }
 
         public String getRegionName() {
