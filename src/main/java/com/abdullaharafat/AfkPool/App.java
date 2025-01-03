@@ -35,7 +35,7 @@ public class App extends JavaPlugin implements Listener {
 
     private String VersionNumber;
 
-    // private int pluginId;
+    private int pluginId;
 
     @Override
     public void onEnable() {
@@ -56,12 +56,12 @@ public class App extends JavaPlugin implements Listener {
             VersionNumber = version;
         });
 
-        // pluginId = 18474;
-        // new Metrics(this, pluginId);
+        pluginId = 18474;
+        new Metrics(this, pluginId);
 
         for (CommandConfig command : commands.values()) {
             if (command.isEnabled()) {
-                Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> executeCommandForRegion(command), 0L, command.getIntervalInterval());
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> executeCommandForRegion(command), 0L, command.getInterval());
             }
         }
     }
