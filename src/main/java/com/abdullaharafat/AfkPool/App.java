@@ -109,7 +109,8 @@ public class App extends JavaPlugin implements Listener {
                     getConfig().getString("commands." + commandKey + ".title"),
                     getConfig().getBoolean("commands." + commandKey + ".enabled"),
                     getConfig().getInt("commands." + commandKey + ".min"),
-                    getConfig().getInt("commands." + commandKey + ".max")
+                    getConfig().getInt("commands." + commandKey + ".max"),
+                    getConfig().getDouble("commands." + commandKey + ".multiplier", 1.0) // Default multiplier is 1.0
                 );
                 commands.put(commandKey, commandConfig);
                 playersInRegions.put(commandKey, new HashSet<>());
@@ -184,6 +185,7 @@ public class App extends JavaPlugin implements Listener {
                     sender.sendMessage(ChatColor.BLUE + "interval: " + ChatColor.GREEN + command.getInterval());
                     sender.sendMessage(ChatColor.BLUE + "min: " + ChatColor.WHITE + command.getMin());
                     sender.sendMessage(ChatColor.BLUE + "max: " + ChatColor.WHITE + command.getMax());
+                    sender.sendMessage(ChatColor.BLUE + "multiplier: " + ChatColor.WHITE + command.getMultiplier());
                     sender.sendMessage("--------------------------------");
                 }
                 return true;
@@ -225,6 +227,9 @@ public class App extends JavaPlugin implements Listener {
     private void executeCommandForPlayer(Player player, CommandConfig commandConfig) {
         if (commandConfig.isEnabled()) {
             int value = commandConfig.getMin() + (int) (Math.random() * ((commandConfig.getMax() - commandConfig.getMin()) + 1));
+            if (player.hasPermission("afkpool.bonus")) {
+                value *= commandConfig.getMultiplier();
+            }
             String command = commandConfig.getCommand().replace("%p", player.getName());
             command = command.replace("%m", String.valueOf(value));
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
@@ -277,8 +282,9 @@ public class App extends JavaPlugin implements Listener {
         private boolean enabled;
         private int min;
         private int max;
+        private double multiplier;
 
-        public CommandConfig(String key, String regionName, long interval, String command, String title, boolean enabled, int min, int max) {
+        public CommandConfig(String key, String regionName, long interval, String command, String title, boolean enabled, int min, int max, double multiplier) {
             this.key = key;
             this.regionName = regionName;
             this.interval = interval;
@@ -287,6 +293,7 @@ public class App extends JavaPlugin implements Listener {
             this.enabled = enabled;
             this.min = min;
             this.max = max;
+            this.multiplier = multiplier;
         }
 
         public String getKey() {
@@ -319,6 +326,10 @@ public class App extends JavaPlugin implements Listener {
 
         public int getMax() {
             return max;
+        }
+
+        public double getMultiplier() {
+            return multiplier;
         }
     }
 }
