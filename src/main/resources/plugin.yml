@@ -11,3 +11,7 @@ commands:
     usage: /AfkPool <help|reload|test|values>
     permission: afkpool.use
     aliases: [ap]
+permissions:
+  afkpool.bonus:
+    description: Allows the player to receive multiplied rewards
+    default: false
