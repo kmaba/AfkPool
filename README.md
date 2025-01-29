@@ -6,4 +6,4 @@
 
 ##### _You can also download from the packages for early access to new ones 🤫_
 
-### Current version: <b>2.1.0</b> 🎉🎉 Unlimited Commands and Optimizations update.
+### Current version: <b>2.1.0</b> Added a permission based multiplier, if a player has the permission `afkpool.bonus` they can get more rewards based on the multiplier set in the config.
