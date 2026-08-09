@@ -35,10 +35,10 @@ jobs:
         STATUS=$?
         set -e
         echo "$OUTPUT" | tail -20
-        if [ $STATUS -ne 0 ] && ! echo "$OUTPUT" | grep -q "status code: 422"; then
+        if [ $STATUS -ne 0 ] && ! echo "$OUTPUT" | grep -qE "status code: (409|422)"; then
           exit 1
         fi
-        if echo "$OUTPUT" | grep -q "status code: 422"; then
+        if echo "$OUTPUT" | grep -qE "status code: (409|422)"; then
           echo "Package version already exists on GitHub Packages; skipping deploy."
         fi
 
