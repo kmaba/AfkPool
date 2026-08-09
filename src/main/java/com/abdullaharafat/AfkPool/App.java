@@ -46,7 +46,7 @@ public class App extends JavaPlugin implements Listener {
         FoliaLib foliaLib = new FoliaLib(this);
         scheduler = foliaLib.getScheduler();
 
-        getLogger().info("AfkPool Version 2.1.0 enabled.");
+        getLogger().info("AfkPool Version " + getDescription().getVersion() + " enabled.");
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
 
