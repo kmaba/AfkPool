@@ -30,8 +30,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        set +e
         OUTPUT=$(mvn deploy -s $GITHUB_WORKSPACE/settings.xml 2>&1)
         STATUS=$?
+        set -e
         echo "$OUTPUT" | tail -20
         if [ $STATUS -ne 0 ] && ! echo "$OUTPUT" | grep -q "status code: 422"; then
           exit 1
