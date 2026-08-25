@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -25,6 +26,8 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class App extends JavaPlugin implements Listener {
 
@@ -32,10 +35,14 @@ public class App extends JavaPlugin implements Listener {
 
     private Map<String, CommandConfig> commands;
     private Map<String, Set<Player>> playersInRegions;
+    private Map<String, Long> nextRewardTimes;
 
     private String Subtitle;
     private String enteringTitle;
     private String exitingTitle;
+
+    private boolean timerEnabled;
+    private String timerFormat;
 
     private String VersionNumber;
 
@@ -68,8 +75,14 @@ public class App extends JavaPlugin implements Listener {
 
         for (CommandConfig command : commands.values()) {
             if (command.isEnabled()) {
+                nextRewardTimes.put(command.getKey(),
+                        System.currentTimeMillis() + command.getInterval() * 50L);
                 scheduler.runTimer(() -> executeCommandForRegion(command), 1L, command.getInterval());
             }
+        }
+
+        if (timerEnabled) {
+            scheduler.runTimer(this::updateRewardTimers, 20L, 20L);
         }
     }
 
@@ -105,10 +118,17 @@ public class App extends JavaPlugin implements Listener {
     public void reload() {
         commands = new HashMap<>();
         playersInRegions = new HashMap<>();
+        nextRewardTimes = new HashMap<>();
 
         Subtitle = getConfig().getString("subtitle");
         enteringTitle = getConfig().getString("entering-title");
         exitingTitle = getConfig().getString("exiting-title");
+
+        timerEnabled = getConfig().getBoolean("timer.enabled", true);
+        timerFormat = getConfig().getString("timer.format", "&7Next reward in &e%time%");
+        if (timerFormat == null || timerFormat.isEmpty()) {
+            timerFormat = "&7Next reward in &e%time%";
+        }
 
         if (getConfig().isConfigurationSection("commands")) {
             for (String commandKey : getConfig().getConfigurationSection("commands").getKeys(false)) {
@@ -206,19 +226,10 @@ public class App extends JavaPlugin implements Listener {
     }
 
     private void executeCommandForRegion(CommandConfig commandConfig) {
+        nextRewardTimes.put(commandConfig.getKey(),
+                System.currentTimeMillis() + commandConfig.getInterval() * 50L);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                    .get(BukkitAdapter.adapt(player.getWorld()));
-            Location location = player.getLocation();
-            ApplicableRegionSet set = regionManager.getApplicableRegions(
-                    BlockVector3.at(location.getX(), location.getY(), location.getZ()));
-            boolean isInRegion = false;
-            for (ProtectedRegion region : set) {
-                if (region.getId().equalsIgnoreCase(commandConfig.getRegionName())) {
-                    isInRegion = true;
-                    break;
-                }
-            }
+            boolean isInRegion = isPlayerInRegion(player, commandConfig.getRegionName());
 
             if (isInRegion) {
                 if (!playersInRegions.get(commandConfig.getKey()).contains(player)) {
@@ -230,6 +241,50 @@ public class App extends JavaPlugin implements Listener {
                 executeCommandForPlayer(player, commandConfig);
             } else {
                 playersInRegions.get(commandConfig.getKey()).remove(player);
+            }
+        }
+    }
+
+    private boolean isPlayerInRegion(Player player, String regionName) {
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                .get(BukkitAdapter.adapt(player.getWorld()));
+        if (regionManager == null) {
+            return false;
+        }
+        Location location = player.getLocation();
+        ApplicableRegionSet set = regionManager.getApplicableRegions(
+                BlockVector3.at(location.getX(), location.getY(), location.getZ()));
+        for (ProtectedRegion region : set) {
+            if (region.getId().equalsIgnoreCase(regionName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateRewardTimers() {
+        long now = System.currentTimeMillis();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Long soonestReward = null;
+            for (CommandConfig commandConfig : commands.values()) {
+                if (!commandConfig.isEnabled()) {
+                    continue;
+                }
+                Long nextReward = nextRewardTimes.get(commandConfig.getKey());
+                if (nextReward == null || nextReward <= now) {
+                    continue;
+                }
+                if (!isPlayerInRegion(player, commandConfig.getRegionName())) {
+                    continue;
+                }
+                if (soonestReward == null || nextReward < soonestReward) {
+                    soonestReward = nextReward;
+                }
+            }
+            if (soonestReward != null) {
+                String message = timerFormat.replace("%time%", Countdown.formatDuration(soonestReward - now));
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                        TextComponent.fromLegacyText(format(message)));
             }
         }
     }
@@ -254,20 +309,9 @@ public class App extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                .get(BukkitAdapter.adapt(player.getWorld()));
-        Location locationOfEvent = event.getTo();
-        ApplicableRegionSet set = regionManager.getApplicableRegions(
-                BlockVector3.at(locationOfEvent.getX(), locationOfEvent.getY(), locationOfEvent.getZ()));
 
         for (CommandConfig commandConfig : commands.values()) {
-            boolean isInRegion = false;
-            for (ProtectedRegion region : set) {
-                if (region.getId().equalsIgnoreCase(commandConfig.getRegionName())) {
-                    isInRegion = true;
-                    break;
-                }
-            }
+            boolean isInRegion = isPlayerInRegion(player, commandConfig.getRegionName());
             if (isInRegion) {
                 if (!playersInRegions.get(commandConfig.getKey()).contains(player)) {
                     playersInRegions.get(commandConfig.getKey()).add(player);
@@ -281,6 +325,13 @@ public class App extends JavaPlugin implements Listener {
                     player.sendTitle(formattedExitingTitle, null, 10, 70, 20);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        for (Set<Player> set : playersInRegions.values()) {
+            set.remove(event.getPlayer());
         }
     }
 

@@ -6,4 +6,4 @@
 
 ##### _You can also download from the packages for early access to new ones 🤫_
 
-### Current version: <b>2.1.1</b> Fixed the Maven build environment: pinned dependency versions, updated GitHub Actions to modern versions and Java 21.
+### Current version: <b>2.2.0</b> Added a live reward countdown timer in the action bar while inside an AFK pool region (toggleable via `timer.enabled` in the config).

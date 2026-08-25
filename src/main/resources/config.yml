@@ -2,6 +2,12 @@ subtitle: '&7You are in the AFK Pool!'
 entering-title: '&aWelcome to the AFK Pool!'
 exiting-title: '&cLeaving the AFK Pool!'
 
+# Countdown displayed in the action bar while standing inside an AFK pool region
+# %time% is replaced with the time left until the next reward (e.g. 4:32)
+timer:
+  enabled: true
+  format: '&7Next reward in &e%time%'
+
 commands:
   command1:
     region-name: 'afkpool-region1'
