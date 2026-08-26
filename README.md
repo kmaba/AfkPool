@@ -6,4 +6,4 @@
 
 ##### _You can also download from the packages for early access to new ones 🤫_
 
-### Current version: <b>2.2.0</b> Added a live reward countdown timer in the action bar while inside an AFK pool region (toggleable via `timer.enabled` in the config).
+### Current version: <b>2.2.1</b> Fixed a critical bug where `/afkpool reload` crashed the plugin (disable/enable cycle closed the plugin JAR). Reload now safely restarts timers in place, validates config entries with clear warnings, and warns when a configured region-name does not exist in any world.

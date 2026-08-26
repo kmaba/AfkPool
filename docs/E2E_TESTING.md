@@ -15,6 +15,8 @@ test environment lives at **`/root/afkpool-testenv/`** on this machine
 | Countdown stops outside region | 0 action-bar packets while bot is teleported away |
 | Countdown resumes on re-entry | Packets resume immediately after teleporting back |
 | `timer.enabled: false` works | Flip config, `/afkpool reload`, expect 0 packets |
+| `/afkpool reload` is safe (v2.2.1+) | Reload with a player online; expect no `IllegalStateException: zip file closed`, task count stable (`/ap values` shows `scheduled-tasks`), rewards continue |
+| Unknown region-name warns (v2.2.1+) | Set region-name to a non-existent region + reload; expect a clear warning in the log and no crash |
 
 ## Pre-built local environment
 

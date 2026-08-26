@@ -1,12 +1,16 @@
 package com.abdullaharafat.AfkPool;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,6 +40,7 @@ public class App extends JavaPlugin implements Listener {
     private Map<String, CommandConfig> commands;
     private Map<String, Set<Player>> playersInRegions;
     private Map<String, Long> nextRewardTimes;
+    private final List<WrappedTask> tasks = new ArrayList<>();
 
     private String Subtitle;
     private String enteringTitle;
@@ -61,11 +66,10 @@ public class App extends JavaPlugin implements Listener {
 
         new UpdateChecker(this, 108746).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
-                getLogger().info("There is not a new AfkPool update available, you are on the latest version ("
-                        + version + ").");
+                getLogger().info("You are running the latest AfkPool version (" + version + ").");
             } else {
-                getLogger().severe("There is a new AfkPool update available. Please update to the latest version ("
-                        + this.getDescription().getVersion() + " --> " + version + ").");
+                getLogger().warning("A different AfkPool version (" + version + ") is available on SpigotMC; you are running "
+                        + this.getDescription().getVersion() + ".");
             }
             VersionNumber = version;
         });
@@ -73,17 +77,7 @@ public class App extends JavaPlugin implements Listener {
         pluginId = 18474;
         new Metrics(this, pluginId);
 
-        for (CommandConfig command : commands.values()) {
-            if (command.isEnabled()) {
-                nextRewardTimes.put(command.getKey(),
-                        System.currentTimeMillis() + command.getInterval() * 50L);
-                scheduler.runTimer(() -> executeCommandForRegion(command), 1L, command.getInterval());
-            }
-        }
-
-        if (timerEnabled) {
-            scheduler.runTimer(this::updateRewardTimers, 20L, 20L);
-        }
+        startTasks();
     }
 
     @Override
@@ -107,35 +101,66 @@ public class App extends JavaPlugin implements Listener {
         }
     }
 
-    public void disablePlugin() {
-        Bukkit.getPluginManager().disablePlugin(this);
+    public void startTasks() {
+        long now = System.currentTimeMillis();
+        for (CommandConfig command : commands.values()) {
+            if (command.isEnabled()) {
+                nextRewardTimes.put(command.getKey(), now + command.getInterval() * 50L);
+                tasks.add(scheduler.runTimer(() -> executeCommandForRegion(command), 1L, command.getInterval()));
+            }
+        }
+        if (timerEnabled) {
+            tasks.add(scheduler.runTimer(this::updateRewardTimers, 20L, 20L));
+        }
+        getLogger().info("Scheduled " + commands.values().stream().filter(CommandConfig::isEnabled).count()
+                + " reward task(s) and " + (timerEnabled ? "the" : "no")
+                + " countdown task (" + tasks.size() + " total).");
     }
 
-    public void enablePlugin() {
-        Bukkit.getPluginManager().enablePlugin(this);
+    public void stopTasks() {
+        for (WrappedTask task : tasks) {
+            try {
+                task.cancel();
+            } catch (Throwable t) {
+                getLogger().warning("Failed to cancel scheduled task: " + t);
+            }
+        }
+        tasks.clear();
+    }
+
+    public int getTaskCount() {
+        return tasks.size();
     }
 
     public void reload() {
+        stopTasks();
         commands = new HashMap<>();
         playersInRegions = new HashMap<>();
         nextRewardTimes = new HashMap<>();
 
-        Subtitle = getConfig().getString("subtitle");
-        enteringTitle = getConfig().getString("entering-title");
-        exitingTitle = getConfig().getString("exiting-title");
+        Subtitle = defaultIfEmpty(getConfig().getString("subtitle"), "&7You are in the AFK Pool!");
+        enteringTitle = defaultIfEmpty(getConfig().getString("entering-title"), "&aWelcome to the AFK Pool!");
+        exitingTitle = defaultIfEmpty(getConfig().getString("exiting-title"), "&cLeaving the AFK Pool!");
 
         timerEnabled = getConfig().getBoolean("timer.enabled", true);
-        timerFormat = getConfig().getString("timer.format", "&7Next reward in &e%time%");
-        if (timerFormat == null || timerFormat.isEmpty()) {
-            timerFormat = "&7Next reward in &e%time%";
-        }
+        timerFormat = defaultIfEmpty(getConfig().getString("timer.format"), "&7Next reward in &e%time%");
 
         if (getConfig().isConfigurationSection("commands")) {
             for (String commandKey : getConfig().getConfigurationSection("commands").getKeys(false)) {
+                String regionName = getConfig().getString("commands." + commandKey + ".region-name");
+                long interval = getConfig().getLong("commands." + commandKey + ".interval");
+                if (regionName == null || regionName.isEmpty()) {
+                    getLogger().warning("Command '" + commandKey + "' has no region-name set, skipping it. Fix your config.yml.");
+                    continue;
+                }
+                if (interval <= 0) {
+                    getLogger().warning("Command '" + commandKey + "' has an invalid interval (" + interval + "), skipping it. Interval must be a positive number of ticks.");
+                    continue;
+                }
                 CommandConfig commandConfig = new CommandConfig(
                     commandKey,
-                    getConfig().getString("commands." + commandKey + ".region-name"),
-                    getConfig().getLong("commands." + commandKey + ".interval"),
+                    regionName,
+                    interval,
                     getConfig().getString("commands." + commandKey + ".command"),
                     getConfig().getString("commands." + commandKey + ".title"),
                     getConfig().getBoolean("commands." + commandKey + ".enabled"),
@@ -150,7 +175,46 @@ public class App extends JavaPlugin implements Listener {
             getLogger().severe("No commands found in the config.yml file.");
         }
 
+        warnMissingRegions();
         reloadConfig();
+    }
+
+    private String defaultIfEmpty(String value, String fallback) {
+        return (value == null || value.isEmpty()) ? fallback : value;
+    }
+
+    private void warnMissingRegions() {
+        try {
+            Set<String> knownRegions = new HashSet<>();
+            boolean anyWorldLoaded = false;
+            for (org.bukkit.World world : Bukkit.getWorlds()) {
+                RegionManager manager = WorldGuard.getInstance().getPlatform().getRegionContainer()
+                        .get(BukkitAdapter.adapt(world));
+                if (manager == null) {
+                    continue;
+                }
+                anyWorldLoaded = true;
+                for (ProtectedRegion region : manager.getRegions().values()) {
+                    knownRegions.add(region.getId());
+                }
+            }
+            if (!anyWorldLoaded || knownRegions.isEmpty()) {
+                return;
+            }
+            for (CommandConfig command : commands.values()) {
+                if (!command.isEnabled()) {
+                    continue;
+                }
+                if (!knownRegions.contains(command.getRegionName())
+                        && !knownRegions.contains(command.getRegionName().toLowerCase())) {
+                    getLogger().warning("WorldGuard region '" + command.getRegionName()
+                            + "' (from '" + command.getKey() + "') was not found in any loaded world."
+                            + " Rewards will never trigger until 'region-name' matches an existing WorldGuard region.");
+                }
+            }
+        } catch (Throwable t) {
+            getLogger().warning("Could not verify configured regions against WorldGuard: " + t.getMessage());
+        }
     }
 
     @Override
@@ -182,11 +246,10 @@ public class App extends JavaPlugin implements Listener {
                 return true;
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                reload();
                 saveDefaultConfig();
                 reloadConfig();
-                disablePlugin();
-                enablePlugin();
+                reload();
+                startTasks();
 
                 sender.sendMessage("--------------------------------");
                 sender.sendMessage(ChatColor.DARK_GREEN + "Config reloaded!");
@@ -219,6 +282,7 @@ public class App extends JavaPlugin implements Listener {
                     sender.sendMessage(ChatColor.BLUE + "multiplier: " + ChatColor.WHITE + command.getMultiplier());
                     sender.sendMessage("--------------------------------");
                 }
+                sender.sendMessage(ChatColor.BLUE + "scheduled-tasks: " + ChatColor.WHITE + getTaskCount());
                 return true;
             }
         }
